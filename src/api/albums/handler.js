@@ -1,5 +1,5 @@
-const autoBind = require('auto-bind');
-const SongsService = require('../../services/postgres/songsService');
+const autoBind = require('auto-bind').default;
+const SongsService = require('../../services/postgres/SongsService');
 
 class AlbumsHandler {
   constructor(service, validator) {

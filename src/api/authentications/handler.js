@@ -1,4 +1,4 @@
-const autoBind = require('auto-bind');
+const autoBind = require('auto-bind').default;
 
 class AuthenticationsHandler {
   constructor(authenticationsService, usersService, tokenManager, validator) {

@@ -1,4 +1,4 @@
-const ClientError = require('./ClientError'); // ✅ Import class-nya
+const ClientError = require('./clientError'); // ✅ Import class-nya
 
 class InvariantError extends ClientError {
   constructor(message) {

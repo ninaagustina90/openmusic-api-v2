@@ -1,5 +1,5 @@
 const Jwt = require('@hapi/jwt');
-const InvariantError = require('../exceptions/InvariantError'); // ❗ pastikan nama file/class konsisten
+const InvariantError = require('../exceptions/invariantError');
 
 const TokenManager = {
   generateAccessToken: (payload) =>

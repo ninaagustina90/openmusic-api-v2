@@ -1,4 +1,4 @@
-const autoBind = require('auto-bind');
+const autoBind = require('auto-bind').default;
 
 class PlaylistsHandler {
   constructor(playlistsService, songsService, validator) {
