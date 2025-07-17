@@ -1,42 +1,38 @@
-// mengimpor dotenv dan menjalankan konfigurasinya
 require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
-
-// albums
-const albums = require('./api/albums');
-const AlbumsService = require('./services/postgres/AlbumsService');
-const AlbumsValidator = require('./validator/albums');
-
-// songs
-const songs = require('./api/songs');
-const SongsService = require('./services/postgres/SongsService');
-const SongsValidator = require('./validator/songs');
 const ClientError = require('./exceptions/clientError');
 
-// users
+// 🔌 Plugins API dan layanan
+const albums = require('./api/albums');
+const songs = require('./api/songs');
 const users = require('./api/users');
-const UsersService = require('./services/postgres/UsersService');
-const UsersValidator = require('./validator/users');
-
-// playlists
 const playlists = require('./api/playlists');
-const PlaylistsService = require('./services/postgres/PlaylistsServices');
-const PlaylistsValidator = require('./validator/playlists');
-
-// authentications
 const authentications = require('./api/authentications');
-const AuthenticationsService = require('./services/postgres/AuthService');
-const AuthenticationsValidator = require('./validator/authentications');
-const TokenManager = require('./tokenize/tokenManager');
-
-// collaborations
 const collaborations = require('./api/collaborations');
+
+// 🧠 Services
+const AlbumsService = require('./services/postgres/AlbumsService');
+const SongsService = require('./services/postgres/SongsService');
+const UsersService = require('./services/postgres/UsersService');
+const PlaylistsService = require('./services/postgres/PlaylistsServices');
+const AuthenticationsService = require('./services/postgres/AuthService');
 const CollaborationsService = require('./services/postgres/CollaborationsService');
+
+// 🛡️ Validator
+const AlbumsValidator = require('./validator/albums');
+const SongsValidator = require('./validator/songs');
+const UsersValidator = require('./validator/users');
+const PlaylistsValidator = require('./validator/playlists');
+const AuthenticationsValidator = require('./validator/authentications');
 const CollaborationsValidator = require('./validator/collaborations');
 
+// 🔑 Token utility
+const TokenManager = require('./tokenize/tokenManager');
+
 const init = async () => {
+  // 🧩 Inisialisasi service
   const collaborationsService = new CollaborationsService();
   const albumsService = new AlbumsService();
   const songsService = new SongsService();
@@ -44,9 +40,10 @@ const init = async () => {
   const playlistsService = new PlaylistsService(collaborationsService);
   const authenticationsService = new AuthenticationsService();
 
+  // 🌐 Setup server
   const server = Hapi.server({
-    host: process.env.HOST,
     port: process.env.PORT,
+    host: process.env.HOST,
     routes: {
       cors: {
         origin: ['*'],
@@ -54,30 +51,25 @@ const init = async () => {
     },
   });
 
-  // registrasi plugin eksternal
-  await server.register([
-    {
-      plugin: Jwt,
-    },
-  ]);
+  // 🔐 Registrasi plugin eksternal
+  await server.register(Jwt);
 
-  // mendefinisikan strategy autentikasi jwt
+  // 🛡️ Strategi autentikasi
   server.auth.strategy('openmusicapp_jwt', 'jwt', {
-    keys: process.env.ACCESS_TOKEN_KEY,
+    keys: process.env.ACCESS_TOKEN_KEY || 'default_key_fallback',
     verify: {
       aud: false,
       iss: false,
       sub: false,
-      maxAgeSec: process.env.ACCESS_TOKEN_AGE,
+      maxAgeSec: parseInt(process.env.ACCESS_TOKEN_AGE, 10) || 14400,
     },
     validate: (artifacts) => ({
       isValid: true,
-      credentials: {
-        id: artifacts.decoded.payload.id,
-      },
+      credentials: { id: artifacts.decoded.payload.id },
     }),
   });
 
+  // 🧩 Registrasi plugin internal
   await server.register([
     {
       plugin: albums,
@@ -128,40 +120,39 @@ const init = async () => {
     },
   ]);
 
+  // ⚠️ Error handler global
   server.ext('onPreResponse', (request, h) => {
     const { response } = request;
 
     if (response instanceof Error) {
-      // penanganan client error secara internal.
       if (response instanceof ClientError) {
-        const newResponse = h.response({
-          status: 'fail',
-          message: response.message,
-        });
-        newResponse.code(response.statusCode);
-        return newResponse;
+        return h
+          .response({
+            status: 'fail',
+            message: response.message,
+          })
+          .code(response.statusCode);
       }
 
-      // mempertahankan penanganan client error oleh hapi secara native, seperti 404, etc.
       if (!response.isServer) {
         return h.continue;
       }
 
-      // penanganan server error sesuai kebutuhan
-      const newResponse = h.response({
-        status: 'error',
-        message: 'terjadi kegagalan pada server kami',
-        // error: response.message, // menampilkan pesan error
-      });
-      newResponse.code(500);
-      return newResponse;
+      return h
+        .response({
+          status: 'error',
+          message: 'Terjadi kegagalan pada server kami',
+          // detail: response.message, // Uncomment saat debugging
+        })
+        .code(500);
     }
-    // jika bukan error, lanjutkan dengan response sebelumnya (tanpa terintervensi)
+
     return h.continue;
   });
 
+  // 🚀 Jalankan server
   await server.start();
-  console.log(`Server berjalan pada ${server.info.uri}`);
+  console.log(`✅ Server berjalan di ${server.info.uri}`);
 };
 
 init();

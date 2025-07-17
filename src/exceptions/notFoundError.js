@@ -1,7 +1,10 @@
-class NotFoundError extends Error {
+const ClientError = require('./clientError'); // ✅ Import class-nya
+
+class NotFoundError extends ClientError {
   constructor(message) {
-    super(message);
-    this.statusCode = 500;
+
+    super(message, 404);
+    
     this.name = 'NotFoundError';
   }
 }

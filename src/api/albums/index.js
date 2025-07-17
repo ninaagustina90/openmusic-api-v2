@@ -1,7 +1,7 @@
 const routes = require('./routes');
 const AlbumsHandler = require('./handler');
 
-module.exports = {
+const albumsPlugin = {
   name: 'albums',
   version: '1.0.0',
   register: async (server, { service, validator }) => {
@@ -9,3 +9,5 @@ module.exports = {
     server.route(routes(handler));
   },
 };
+
+module.exports = albumsPlugin;

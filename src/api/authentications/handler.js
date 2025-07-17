@@ -21,11 +21,13 @@ class AuthenticationsHandler {
 
     await this._authenticationsService.addRefreshToken(refreshToken);
 
-    return h.response({
-      status: 'success',
-      message: 'Authentication berhasil ditambahkan',
-      data: { accessToken, refreshToken },
-    }).code(201);
+    return h
+      .response({
+        status: 'success',
+        message: 'Authentication berhasil ditambahkan',
+        data: { accessToken, refreshToken },
+      })
+      .code(201);
   }
 
   async putAuthenticationHandler(request, h) {
@@ -38,11 +40,13 @@ class AuthenticationsHandler {
 
     const accessToken = this._tokenManager.generateAccessToken({ id });
 
-    return h.response({
-      status: 'success',
-      message: 'Access token berhasil diperbarui',
-      data: { accessToken },
-    }).code(200);
+    return h
+      .response({
+        status: 'success',
+        message: 'Access token berhasil diperbarui',
+        data: { accessToken },
+      })
+      .code(200);
   }
 
   async deleteAuthenticationHandler(request, h) {
@@ -53,10 +57,12 @@ class AuthenticationsHandler {
     await this._authenticationsService.verifyRefreshToken(refreshToken);
     await this._authenticationsService.deleteRefreshToken(refreshToken);
 
-    return h.response({
-      status: 'success',
-      message: 'Refresh token berhasil dihapus',
-    }).code(200);
+    return h
+      .response({
+        status: 'success',
+        message: 'Refresh token berhasil dihapus',
+      })
+      .code(200);
   }
 }
 

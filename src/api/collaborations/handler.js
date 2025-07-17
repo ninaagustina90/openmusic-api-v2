@@ -21,13 +21,13 @@ class CollaborationsHandler {
 
     const collaborationId = await this._collaborationsService.addCollaboration(playlistId, userId);
 
-    return h.response({
-      status: 'success',
-      message: 'Kolaborasi berhasil ditambahkan',
-      data: {
-        collaborationId,
-      },
-    }).code(201);
+    return h
+      .response({
+        status: 'success',
+        message: 'Kolaborasi berhasil ditambahkan',
+        data: { collaborationId },
+      })
+      .code(201);
   }
 
   async deleteCollaborationHandler(request, h) {
@@ -39,10 +39,12 @@ class CollaborationsHandler {
     await this._playlistsService.verifyPlaylistOwner(playlistId, credentialId);
     await this._collaborationsService.deleteCollaboration(playlistId, userId);
 
-    return h.response({
-      status: 'success',
-      message: 'Kolaborasi berhasil dihapus',
-    }).code(200);
+    return h
+      .response({
+        status: 'success',
+        message: 'Kolaborasi berhasil dihapus',
+      })
+      .code(200);
   }
 }
 

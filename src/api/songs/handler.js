@@ -10,20 +10,19 @@ class SongsHandler {
 
   async postSongHandler(request, h) {
     this._validator.validateSongPayload(request.payload);
-
     const songId = await this._service.addSong(request.payload);
 
-    return h.response({
-      status: 'success',
-      message: 'Lagu berhasil ditambahkan',
-      data: { songId },
-    }).code(201);
+    return h
+      .response({
+        status: 'success',
+        message: 'Lagu berhasil ditambahkan',
+        data: { songId },
+      })
+      .code(201);
   }
 
   async getSongsHandler(request) {
     const { title = '', performer = '' } = request.query;
-
-    // Pastikan pencarian bersifat fleksibel tanpa filtering manual
     const songs = await this._service.getSongs(title, performer);
 
     return {

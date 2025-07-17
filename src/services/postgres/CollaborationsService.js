@@ -11,16 +11,17 @@ class CollaborationsService {
     const id = `collab-${nanoid(16)}`;
 
     const query = {
-      text: 'INSERT INTO collaborations VALUES($1, $2, $3) RETURNING id',
+      text: 'INSERT INTO collaborations VALUES ($1, $2, $3) RETURNING id',
       values: [id, playlistId, userId],
     };
 
-    const { rowCount, rows } = await this._pool.query(query);
+    const result = await this._pool.query(query);
 
-    if (!rowCount) {
+    if (!result.rowCount) {
       throw new InvariantError('Kolaborasi gagal ditambahkan');
     }
-    return rows[0].id;
+
+    return result.rows[0].id;
   }
 
   async deleteCollaboration(playlistId, userId) {
@@ -29,22 +30,22 @@ class CollaborationsService {
       values: [playlistId, userId],
     };
 
-    const { rowCount } = await this._pool.query(query);
+    const result = await this._pool.query(query);
 
-    if (!rowCount) {
+    if (!result.rowCount) {
       throw new InvariantError('Kolaborasi gagal dihapus');
     }
   }
 
   async verifyCollaborator(playlistId, userId) {
     const query = {
-      text: 'SELECT * FROM collaborations WHERE playlist_id = $1 AND user_id = $2',
+      text: 'SELECT id FROM collaborations WHERE playlist_id = $1 AND user_id = $2',
       values: [playlistId, userId],
     };
 
-    const { rowCount } = await this._pool.query(query);
+    const result = await this._pool.query(query);
 
-    if (!rowCount) {
+    if (!result.rowCount) {
       throw new InvariantError('Kolaborasi gagal diverifikasi');
     }
   }

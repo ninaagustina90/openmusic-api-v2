@@ -6,22 +6,24 @@ const {
 const InvariantError = require('../../exceptions/invariantError');
 
 const AuthenticationsValidator = {
-  validatePostAuthenticationPayload: (payload) => {
-    const validationResult = PostAuthenticationPayloadSchema.validate(payload);
-    if (validationResult.error) {
-      throw new InvariantError(validationResult.error.message);
+  validatePostAuthenticationPayload(payload) {
+    const { error } = PostAuthenticationPayloadSchema.validate(payload);
+    if (error) {
+      throw new InvariantError(error.message);
     }
   },
-  validatePutAuthenticationPayload: (payload) => {
-    const validationResult = PutAuthenticationPayloadSchema.validate(payload);
-    if (validationResult.error) {
-      throw new InvariantError(validationResult.error.message);
+
+  validatePutAuthenticationPayload(payload) {
+    const { error } = PutAuthenticationPayloadSchema.validate(payload);
+    if (error) {
+      throw new InvariantError(error.message);
     }
   },
-  validateDeleteAuthenticationPayload: (payload) => {
-    const validationResult = DeleteAuthenticationPayloadSchema.validate(payload);
-    if (validationResult.error) {
-      throw new InvariantError(validationResult.error.message);
+
+  validateDeleteAuthenticationPayload(payload) {
+    const { error } = DeleteAuthenticationPayloadSchema.validate(payload);
+    if (error) {
+      throw new InvariantError(error.message);
     }
   },
 };
